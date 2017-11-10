@@ -8,10 +8,27 @@ app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs")
 
+//seys up my urlDatabse hardcoded with2 websites
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+//sets up my users database hardcoded with 2 users
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "pass1"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "pass2"
+  }
+}
+
+
 //http://localhost:8080/
 app.get("/", (req, res) => {
   res.end("Hello!");
