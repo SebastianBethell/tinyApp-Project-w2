@@ -20,6 +20,12 @@
           <tr>
           <td> <%= urls[url] %></td>
           <td> <%= url %></td>
+          <td> <a href='http://localhost:8080/urls/<%= url %>'>Edit</a>
+          <td> <form method="POST" action="/urls/<%= url %>/delete">
+                   'Delete' this URL
+                  <input type="submit" name="delete" >
+                </form>
+          </td>
           </tr>
           <% }; %>
         </tbody>

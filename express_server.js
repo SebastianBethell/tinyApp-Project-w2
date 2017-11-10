@@ -49,6 +49,19 @@ app.post("/urls", (req, res) => {
   res.redirect(`http://localhost:8080/urls/${rString}`);
 });
 
+//deletes the urls from out database
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect(`http://localhost:8080/urls/`);
+});
+
+app.post("/urls/:id/", (req, res) => {
+  console.log(req.body);
+  urlDatabase[req.params.id] = req.body['newLongUrl']
+  res.redirect(`http://localhost:8080/urls/${req.params.id}`);
+});
+
+
 //random number generator
 let rString = generateRandomString('0123456789abcdefghijklmnopqrstuvwxyz');
 

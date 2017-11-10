@@ -8,6 +8,12 @@
     <% include ./partials/_header %>
   </header>
   <%= ' long form:      ' + urls[shortURL] %> <br>
-  <%= ' short form:     ' + shortURL %>
+  <%= ' short form:     ' + shortURL %> <br>
+  <form method="POST" action="/urls/<%= shortURL %>/">
+    Update long URL
+    <input type="text" name="newLongUrl">
+    <input type="submit" name="update" >
+  </form>
+  <a href="http://localhost:8080/urls/">return to home</a>
 </body>
 </html>
