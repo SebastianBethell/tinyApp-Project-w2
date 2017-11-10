@@ -18,12 +18,13 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {  username: req.cookies["username"] };
+  res.render("urls_new", templateVars);
 });
 
 //lists all my url database and has link to shorten an URL
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = {  username: req.cookies["username"], urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
@@ -34,7 +35,7 @@ app.get("/hello", (req, res) => {
 
 //input: urls/*SHORTURL*   output: takes you to urls_show.ejs
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { urls: urlDatabase, shortURL: req.params.id };
+  let templateVars = {  username: req.cookies["username"], urls: urlDatabase, shortURL: req.params.id };
   res.render("urls_show", templateVars);
 });
 
@@ -67,12 +68,15 @@ app.post("/urls/:id/", (req, res) => {
 
 //login using cookies
 app.post("/login", (req, res) => {
-  console.log(req.body.username);
   res.cookie('username', req.body.username);
   res.redirect(`http://localhost:8080/urls/`);
 });
 
-
+//logout using cookies
+app.post("/logout", (req, res) => {
+  res.clearCookie('username');
+  res.redirect(`http://localhost:8080/urls/`);
+});
 
 
 //random number generator
