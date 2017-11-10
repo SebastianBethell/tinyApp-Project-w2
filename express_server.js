@@ -45,6 +45,15 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+//howusers register email password
+app.get("/register", (req, res) => {
+  let templateVars = {  username: req.cookies["username"] };
+  res.render("urls_register", templateVars);
+});
+
+
+
+
 //this gets called when user enters website into form and hits submit.  adds http:// to website entered and redirects you to urls/*SHORTURL*
 app.post("/urls", (req, res) => {
   console.log(req.body);  // debug statement to see POST parameters.
@@ -77,6 +86,12 @@ app.post("/logout", (req, res) => {
   res.clearCookie('username');
   res.redirect(`http://localhost:8080/urls/`);
 });
+
+// register email password
+app.get("/register", (req, res) => {
+  let templateVars = {  username: req.cookies["username"] };
+});
+
 
 
 //random number generator
