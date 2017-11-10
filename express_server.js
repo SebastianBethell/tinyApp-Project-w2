@@ -2,7 +2,9 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser')
 
+app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs")
 
@@ -55,11 +57,22 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect(`http://localhost:8080/urls/`);
 });
 
+//update long url to new requested url
 app.post("/urls/:id/", (req, res) => {
   console.log(req.body);
   urlDatabase[req.params.id] = req.body['newLongUrl']
   res.redirect(`http://localhost:8080/urls/${req.params.id}`);
 });
+
+
+//login using cookies
+app.post("/login", (req, res) => {
+  console.log(req.body.username);
+  res.cookie('username', req.body.username);
+  res.redirect(`http://localhost:8080/urls/`);
+});
+
+
 
 
 //random number generator
