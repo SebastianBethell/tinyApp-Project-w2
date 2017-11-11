@@ -34,13 +34,13 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {  users: users };
+  let templateVars = {   user_id: req.cookies["user_id"], userList: users };
   res.render("urls_new", templateVars);
 });
 
 //lists all my url database and has link to shorten an URL
 app.get("/urls", (req, res) => {
-  let templateVars = {  users: users, urls: urlDatabase };
+  let templateVars = {  user_id: req.cookies["user_id"], urls: urlDatabase, userList: users };
   res.render("urls_index", templateVars);
 });
 
@@ -51,7 +51,7 @@ app.get("/hello", (req, res) => {
 
 //input: urls/*SHORTURL*   output: takes you to urls_show.ejs
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {  users: users, urls: urlDatabase, shortURL: req.params.id };
+  let templateVars = {  user_id: req.cookies["user_id"], urls: urlDatabase, shortURL: req.params.id, userList: users };
   res.render("urls_show", templateVars);
 });
 
@@ -63,13 +63,13 @@ app.get("/u/:shortURL", (req, res) => {
 
 //howusers register email password
 app.get("/register", (req, res) => {
-  let templateVars = {  users: users };
+  let templateVars = {  user_id: req.cookies["user_id"], userList: users };
   res.render("urls_register", templateVars);
 });
 
 //new log in method
 app.get("/login", (req, res) => {
-  let templateVars = { users: users};
+  let templateVars = { user_id: req.cookies["user_id"], userList: users};
   res.render("urls_login", templateVars);
 });
 
@@ -97,36 +97,36 @@ app.post("/urls/:id/", (req, res) => {
 
 //checks if your password and email back an excisting user if so it logs you in if not 403 status code sent back
 app.post("/login", (req, res) => {
-  for (userKeys in users)
-  if (users[userKeys].email === req.body.email){
-    console.log(' email matches an existing user');
-    if (users[userKeys].password === req.body.password) {
-      console.log('password matches an existing user');
-      res.cookie('user_id', userKeys);
-      res.redirect(`http://localhost:8080/urls/`);
-    } else {
-      res.status(403).send('Password does not match email provided');
+  for (userKeys in users) {
+    if (users[userKeys].email === req.body.email){
+      console.log(' email matches an existing user');
+      if (users[userKeys].password === req.body.password) {
+        console.log('password matches an existing user');
+        res.cookie('user_id', userKeys);
+        res.redirect(`http://localhost:8080/urls/`);
+      } else {
+        res.status(403).send('Password does not match email provided');
+      }
     }
-  } else {
-    res.status(403).send('Email not found');
   }
+  res.status(403).send('Email not found');
 });
 
 //logout using cookies
 app.post("/logout", (req, res) => {
-  res.clearCookie('users');
+  res.clearCookie('user_id');
   res.redirect(`http://localhost:8080/urls/`);
 });
 
 // register email password
 app.post("/register", (req, res) => {
-  let templateVars = {  username: req.cookies["username"] };
-  users[rString] = {
-    id: rString,
+  //let templateVars = {  user_id: req.cookies["user_id"], userList: users };
+  let tempId = rString;
+  users[tempId] = {
+    id: tempId,
     email: req.body.email,
     password: req.body.password
   };
-  res.cookie('user_id', rString);
   res.redirect(`http://localhost:8080/urls/`);
 });
 

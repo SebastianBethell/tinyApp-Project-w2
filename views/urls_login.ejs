@@ -8,9 +8,9 @@
     <% include ./partials/_header %>
   </header>
   <br>
-  <% if(!users){ %>
+  <% if(userList[user_id]){ %>
   <form action="/logout" method="POST">
-    <label for="">User: <%= users %></label>
+    <label for="">User: <%= user_id %></label>
     <input type="submit" value="logout">
   </form>
   <% } else{ %>
