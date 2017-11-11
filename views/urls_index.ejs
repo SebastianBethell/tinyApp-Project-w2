@@ -8,17 +8,17 @@
     <% include ./partials/_header %>
   </header>
     <ul>
-      <table style="width:50%">
+      <table style="width:100%">
         <thead>
           <tr>
-            <th>Url</th>
+            <th>Long  Url</th>
             <th>Short Url</th>
           </tr>
         </thead>
         <tbody>
           <% for (url in urls) { %>
           <tr>
-          <td> <%= urls[url] %></td>
+          <td> <%= urls[url].longUrl %></td>
           <td> <%= url %></td>
           <td> <a href='http://localhost:8080/urls/<%= url %>'>Edit</a>
           <td> <form method="POST" action="/urls/<%= url %>/delete">
@@ -33,3 +33,16 @@
     <a href="http://localhost:8080/urls/new">Click here to shorten your link</a>
 </body>
 </html>
+
+<!--
+const urls = {
+url"b2xVn2": {
+    longUrl: "http://www.lighthouselabs.ca",
+    userID: "userRandomID"
+  },
+  "9sm5xK": {
+    longUrl: "http://www.google.com",
+    userID: "userRandomID"
+  }
+};
+} -->

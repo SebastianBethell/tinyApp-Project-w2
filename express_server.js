@@ -10,8 +10,14 @@ app.set("view engine", "ejs")
 
 //seys up my urlDatabse hardcoded with2 websites
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    longUrl: "http://www.lighthouselabs.ca",
+    userID: "userRandomID"
+  },
+  "9sm5xK": {
+    longUrl: "http://www.google.com",
+    userID: "userRandomID"
+  }
 };
 
 //sets up my users database hardcoded with 2 users
@@ -19,12 +25,12 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "pass1"
+    password: "1"
   },
  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "pass2"
+    password: "2"
   }
 }
 
@@ -77,7 +83,10 @@ app.get("/login", (req, res) => {
 //this gets called when user enters website into form and hits submit.  adds http:// to website entered and redirects you to urls/*SHORTURL*
 app.post("/urls", (req, res) => {
   console.log(req.body);  // debug statement to see POST parameters.
-  urlDatabase[rString] = 'http://' + req.body['longURL'];
+  urlDatabase[rString] = {
+    longUrl: 'http://' + req.body['longURL'],
+    userID: req.body['uid']
+  };
   res.redirect(`http://localhost:8080/urls/${rString}`);
 });
 
@@ -90,8 +99,15 @@ app.post("/urls/:id/delete", (req, res) => {
 //update long url to new requested url
 app.post("/urls/:id/", (req, res) => {
   console.log(req.body);
-  urlDatabase[req.params.id] = req.body['newLongUrl']
+  if (urlDatabase[req.params.id].userID === req.body.uid){
+      console.log( urlDatabase[req.params.id]);
+      console.log(req.body['newLongUrl']);
+      urlDatabase[req.params.id].longUrl = req.body['newLongUrl'];
   res.redirect(`http://localhost:8080/urls/${req.params.id}`);
+  } else {
+    res.status(403).send('You must be logged in to change an URL');
+  }
+
 });
 
 
@@ -121,7 +137,7 @@ app.post("/logout", (req, res) => {
 // register email password
 app.post("/register", (req, res) => {
   //let templateVars = {  user_id: req.cookies["user_id"], userList: users };
-  let tempId = rString;
+  let tempId = uString;
   users[tempId] = {
     id: tempId,
     email: req.body.email,
@@ -134,6 +150,7 @@ app.post("/register", (req, res) => {
 
 //random number generator
 let rString = generateRandomString('0123456789abcdefghijklmnopqrstuvwxyz');
+let uString = generateRandomString('0123456789abcdefghijklmnopqrstuvwxyz');
 
 function generateRandomString(chars) {
     let result = '';
