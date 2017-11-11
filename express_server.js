@@ -4,7 +4,7 @@ const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
-var cookieSession = require('cookie-session');
+const cookieSession = require('cookie-session');
 
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended: true}));
@@ -76,18 +76,29 @@ app.get("/urls/:id", (req, res) => {
 
 //input: /u/*SHORTuRL*    output: redirects to the long version of the website
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL].longUrl;
-  res.redirect(longURL);
+  if (urlDatabase[req.params.shortURL]) {
+    let longURL = urlDatabase[req.params.shortURL].longUrl;
+    res.redirect(longURL);
+  } else {
+    res.status(403).send('This short url does not exist!');
+  }
+
 });
 
 //howusers register email password
 app.get("/register", (req, res) => {
+  if (users[req.session.user_id]){
+    res.redirect(`http://localhost:8080/urls/`);
+  }
   let templateVars = {  user_id: req.session.user_id, userList: users };
   res.render("urls_register", templateVars);
 });
 
 //new log in method
 app.get("/login", (req, res) => {
+  if (users[req.session.user_id]){
+    res.redirect(`http://localhost:8080/urls/`);
+  }
   let templateVars = { user_id: req.session.user_id, userList: users};
   res.render("urls_login", templateVars);
 });
@@ -95,12 +106,12 @@ app.get("/login", (req, res) => {
 
 //this gets called when user enters website into form and hits submit.  adds http:// to website entered and redirects you to urls/*SHORTURL*
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // debug statement to see POST parameters.
-  urlDatabase[rString] = {
+  let nString = generateRandomString('0123456789abcdefghijklmnopqrstuvwxyz');
+  urlDatabase[nString] = {
     longUrl: 'http://' + req.body['longURL'],
     userID: req.body['uid']
   };
-  res.redirect(`http://localhost:8080/urls/${rString}`);
+  res.redirect(`http://localhost:8080/urls/${nString}`);
 });
 
 //deletes the urls from out database
@@ -111,12 +122,9 @@ app.post("/urls/:id/delete", (req, res) => {
 
 //update long url to new requested url
 app.post("/urls/:id/", (req, res) => {
-  console.log(req.body);
   if (urlDatabase[req.params.id].userID === req.body.uid){
-      console.log( urlDatabase[req.params.id]);
-      console.log(req.body['newLongUrl']);
       urlDatabase[req.params.id].longUrl = req.body['newLongUrl'];
-  res.redirect(`http://localhost:8080/urls/${req.params.id}`);
+  res.redirect(`http://localhost:8080/urls/`);
   } else {
     res.status(403).send('You must be logged in to change an URL');
   }
@@ -131,11 +139,8 @@ app.post("/login", (req, res) => {
 
   for (userKeys in users) {
     if (users[userKeys].email === req.body.email){
-      console.log(' email matches an existing user'); //used for debugging
       if (bcrypt.compareSync(req.body.password, hashedPassword)) { //(users[userKeys].password === req.body.password)
-        console.log('password matches an existing user'); //used for debugging
         req.session.user_id = userKeys;
-        console.log(req.session.user_id);   //used for debugging
         res.redirect(`http://localhost:8080/urls/`);
       } else {
         res.status(403).send('Password does not match email provided');
@@ -147,22 +152,31 @@ app.post("/login", (req, res) => {
 
 //logout using cookies
 app.post("/logout", (req, res) => {
-  console.log(req.session.user_id);
   req.session = null;
   res.redirect(`http://localhost:8080/urls/`);
 });
 
 // register email password
 app.post("/register", (req, res) => {
-  let tempId = uString;
+  let regString = generateRandomString('0123456789abcdefghijklmnopqrstuvwxyz');
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
 
-  users[tempId] = {
-    id: tempId,
+  if (req.body.password === '' || req.body.email === ''){
+    res.status(403).send('You need to input both an email and a password. Go back to try again.');
+  }
+  for (user in users){
+    if (req.body.email === users[user].email){
+          res.status(403).send('Email already belongs to another user.  Please go back and try again.');
+    }
+  }
+
+  users[regString] = {
+    id: regString,
     email: req.body.email,
     password: hashedPassword
   };
+  req.session.user_id = users[regString].id;
   res.redirect(`http://localhost:8080/urls/`);
 });
 
@@ -173,7 +187,6 @@ function urlsForUser(id) {
   for (urlID in urlDatabase){
     if (urlDatabase[urlID].userID === id) {
       urlDatabaseForUser[urlID] = urlDatabase[urlID];
-      //console.log('urlDatabaseForUser: ', urlDatabaseForUser);  //used for debugging
     }
   }
   return urlDatabaseForUser;
@@ -182,8 +195,9 @@ function urlsForUser(id) {
 
 
 //random number generator
-let rString = generateRandomString('0123456789abcdefghijklmnopqrstuvwxyz');
-let uString = generateRandomString('0123456789abcdefghijklmnopqrstuvwxyz');
+//let rString = generateRandomString('0123456789abcdefghijklmnopqrstuvwxyz');
+//let uString = generateRandomString('0123456789abcdefghijklmnopqrstuvwxyz');
+
 
 function generateRandomString(chars) {
     let result = '';

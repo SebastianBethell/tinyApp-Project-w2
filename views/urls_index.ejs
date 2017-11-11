@@ -7,18 +7,16 @@
   <header>
     <% include ./partials/_header %>
   </header>
-    <h2> Home Page
-  </h2>
+    <h2> <center>Home Page /urls</center></h2>
+
   <% if(userList[user_id]){ %>
     <ul>
-      <table style="width:100%">
+      <table border="5" width=50% CELLSPACING=5 align=center>
         <thead>
-          <tr>
-            <th>Long  Url</th>
+            <th>Long Url</th>
             <th>Short Url</th>
-          </tr>
         </thead>
-        <tbody>
+        <tbody align=center>
           <% for (url in urls) { %>
           <tr>
           <td> <%= urls[url].longUrl %></td>
@@ -37,19 +35,7 @@
         <p><a href="http://localhost:8080/login">You are not logged in. Click here to visit login page</a></p><br>
         <p><a href="http://localhost:8080/register">You are not logged in. Click here to visit registration page</a></p>
       <% } %>
-    <a href="http://localhost:8080/urls/new">Click here to shorten your link</a>
+    <a href="http://localhost:8080/urls/new">Click here to shorten a new link!</a>
 </body>
 </html>
 
-<!--
-const urls = {
-url"b2xVn2": {
-    longUrl: "http://www.lighthouselabs.ca",
-    userID: "userRandomID"
-  },
-  "9sm5xK": {
-    longUrl: "http://www.google.com",
-    userID: "userRandomID"
-  }
-};
-} -->

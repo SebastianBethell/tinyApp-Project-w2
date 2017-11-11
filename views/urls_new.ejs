@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head></head>
-  <body>
-    <header>
-      <% include ./partials/_header %>
-    </header>
-      <h2> New Urls Page
-      </h2>
-      <% if(userList[user_id]){ %>
-        <form action="/urls" method="POST" style="margin:150px;">
-          <label for="longURL">Enter a URL:</label>
-          <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
-          <input type="submit" value="Submit">
-          <input type="hidden" name="uid" value="<%= user_id %>" />
-        </form>
-      <% } else{ %>
-        <p><a href="http://localhost:8080/login">You are not logged in. Click here to visit login page</a></p>
-        </form>
-      <% } %>
-      <a href="http://localhost:8080/urls/">return to home</a>
-  </body>
+<head>
+  <title>TinyApp</title>
+</head>
+<body>
+  <header>
+    <% include ./partials/_header %>
+  </header>
+    <h2> <center>New Urls Page</center></h2>
+
+    <% if(userList[user_id]){ %>
+      <form action="/urls" method="POST" >
+        <label for="longURL">Enter a URL:</label>
+        <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+        <input type="submit" value="Submit">
+        <input type="hidden" name="uid" value="<%= user_id %>" />
+      </form>
+    <% } else{ %>
+      <p><a href="http://localhost:8080/login">You are not logged in. Click here to visit login page</a></p>
+      </form>
+    <% } %>
+    <a href="http://localhost:8080/urls/">return to home</a>
+</body>
 </html>

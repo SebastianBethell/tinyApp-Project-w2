@@ -1,0 +1,34 @@
+{
+  "name": "tinyappproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "express_server.js",
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "body-parser": "^1.18.2",
+    "cookie-parser": "^1.4.3",
+    "cookie-session": "^2.0.0-beta.3",
+    "ejs": "^2.5.7",
+    "express": "^4.16.2"
+  },
+ "devDependencies": {
+    "body-parser": "^1.18.2",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.5.7",
+    "express": "^4.16.2",
+    "cookie-session": "^2.0.0-beta.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SebastianBethell/tinyApp-Project-w2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SebastianBethell/tinyApp-Project-w2/issues"
+  },
+  "homepage": "https://github.com/SebastianBethell/tinyApp-Project-w2#readme"
+}

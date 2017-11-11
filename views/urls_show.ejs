@@ -7,17 +7,38 @@
   <header>
     <% include ./partials/_header %>
   </header>
-  <h2> Edit Url Page
-  </h2>
-  <% if(userList[user_id]){ %>
-  <%= ' long form:      ' + urls[shortURL].longUrl %> <br>
-  <%= ' short form:     ' + shortURL %> <br>
-  <form method="POST" action="/urls/<%= shortURL %>/">
-    Update long URL
-    <input type="text" name="newLongUrl">
-    <input type="submit" name="update" >
-    <input type="hidden" name="uid" value="<%= user_id %>" />
-  </form>
+  <h2> <center>Edit Url Page</center></h2>
+
+  <% if(userList[user_id]){ %>                          <!-- checks that the cookies user_id exists in the user database  -->
+    <% if (urls[shortURL]){ %>                          <!-- checks that the short url exists in the url database  -->
+      <% if (urls[shortURL]['userID'] === user_id){ %>  <!-- checks that the url belongs to user -->
+        <TABLE  BORDER="5" align=center>
+          <TR>
+            <TH COLSPAN="2">
+              <H3><BR>Information for url</H3>
+            </TH>
+          </TR>
+            <TH>Long url</TH>
+            <TH><%= urls[shortURL].longUrl %></TH>
+          <TR>
+            <TH>Short url</TH>
+            <TH><%= shortURL %></TH>
+          </TR>
+          <TR>
+            <TH>Update long url</TH>
+            <TH><form method="POST" action="/urls/<%= shortURL %>/">
+              Enter new url
+              <input type="text" name="newLongUrl">
+              <input type="submit" name="update" >
+              <input type="hidden" name="uid" value="<%= user_id %>" />
+            </form></TH>
+          </TR>
+      <% } else{ %>
+         <p><a href="http://localhost:8080/urls">This short url does not belong to you. Click here to return to /urls</a></p>
+      <% } %>
+    <% } else{ %>
+      <p><a href="http://localhost:8080/urls">This short url does not exist. Click here to return to /urls</a></p>
+    <% } %>
   <% } else{ %>
     <p><a href="http://localhost:8080/login">You are not logged in or this url does not belong to you. Click here to visit login page</a></p><br>
     <p><a href="http://localhost:8080/register">You are not logged in or this url does not belong to you. Click here to visit registration page</a></p>
@@ -25,3 +46,5 @@
   <a href="http://localhost:8080/urls/">return to home</a>
 </body>
 </html>
+
+
