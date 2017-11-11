@@ -2,13 +2,23 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
+var cookieSession = require('cookie-session');
 
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs")
 
-//seys up my urlDatabse hardcoded with2 websites
+app.use(cookieSession({
+  name: 'session',
+  keys: [/* secret keys */],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
+
+//seys up my urlDatabase hardcoded with2 websites
 const urlDatabase = {
   "b2xVn2": {
     longUrl: "http://www.lighthouselabs.ca",
@@ -46,7 +56,8 @@ app.get("/urls/new", (req, res) => {
 
 //lists all my url database and has link to shorten an URL
 app.get("/urls", (req, res) => {
-  let templateVars = {  user_id: req.cookies["user_id"], urls: urlDatabase, userList: users };
+  let usersUrlDatabase = urlsForUser(req.cookies["user_id"]);
+  let templateVars = {  user_id: req.cookies["user_id"], urls: usersUrlDatabase, userList: users };
   res.render("urls_index", templateVars);
 });
 
@@ -63,7 +74,7 @@ app.get("/urls/:id", (req, res) => {
 
 //input: /u/*SHORTuRL*    output: redirects to the long version of the website
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  let longURL = urlDatabase[req.params.shortURL].longUrl;
   res.redirect(longURL);
 });
 
@@ -113,11 +124,14 @@ app.post("/urls/:id/", (req, res) => {
 
 //checks if your password and email back an excisting user if so it logs you in if not 403 status code sent back
 app.post("/login", (req, res) => {
+  const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
   for (userKeys in users) {
     if (users[userKeys].email === req.body.email){
-      console.log(' email matches an existing user');
-      if (users[userKeys].password === req.body.password) {
-        console.log('password matches an existing user');
+      console.log(' email matches an existing user'); //used for debugging
+      if (bcrypt.compareSync(req.body.password, hashedPassword)) { //(users[userKeys].password === req.body.password)
+        console.log('password matches an existing user'); //used for debugging
         res.cookie('user_id', userKeys);
         res.redirect(`http://localhost:8080/urls/`);
       } else {
@@ -138,14 +152,30 @@ app.post("/logout", (req, res) => {
 app.post("/register", (req, res) => {
   //let templateVars = {  user_id: req.cookies["user_id"], userList: users };
   let tempId = uString;
+  const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
   users[tempId] = {
     id: tempId,
     email: req.body.email,
-    password: req.body.password
+    password: hashedPassword
   };
   res.redirect(`http://localhost:8080/urls/`);
 });
 
+
+//function for returning a subset of the urlDatabase that belongs to user id
+function urlsForUser(id) {
+  let urlDatabaseForUser = {};
+  for (urlID in urlDatabase){
+    if (urlDatabase[urlID].userID === id) {
+      urlDatabaseForUser[urlID] = urlDatabase[urlID];
+      //console.log('urlDatabaseForUser: ', urlDatabaseForUser);  //used for debugging
+    }
+  }
+  return urlDatabaseForUser;
+}
+//urlsForUser('userRandomID'); //used for debugging
 
 
 //random number generator
