@@ -28,7 +28,6 @@ const users = {
   }
 }
 
-
 //http://localhost:8080/
 app.get("/", (req, res) => {
   res.end("Hello!");
@@ -68,9 +67,6 @@ app.get("/register", (req, res) => {
   res.render("urls_register", templateVars);
 });
 
-
-
-
 //this gets called when user enters website into form and hits submit.  adds http:// to website entered and redirects you to urls/*SHORTURL*
 app.post("/urls", (req, res) => {
   console.log(req.body);  // debug statement to see POST parameters.
@@ -105,8 +101,15 @@ app.post("/logout", (req, res) => {
 });
 
 // register email password
-app.get("/register", (req, res) => {
+app.post("/register", (req, res) => {
   let templateVars = {  username: req.cookies["username"] };
+  users[rString] = {
+    id: rString,
+    email: req.body.email,
+    password: req.body.password
+  };
+  res.cookie('user_id', rString);
+  res.redirect(`http://localhost:8080/urls/`);
 });
 
 
