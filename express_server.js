@@ -12,10 +12,7 @@ app.set("view engine", "ejs")
 
 app.use(cookieSession({
   name: 'session',
-  keys: [/* secret keys */],
-
-  // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  keys: ['key1'],
 }))
 
 //seys up my urlDatabase hardcoded with2 websites
@@ -50,14 +47,14 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {   user_id: req.cookies["user_id"], userList: users };
+  let templateVars = {   user_id: req.session.user_id, userList: users };   //req.cookies["user_id"]
   res.render("urls_new", templateVars);
 });
 
 //lists all my url database and has link to shorten an URL
 app.get("/urls", (req, res) => {
-  let usersUrlDatabase = urlsForUser(req.cookies["user_id"]);
-  let templateVars = {  user_id: req.cookies["user_id"], urls: usersUrlDatabase, userList: users };
+  let usersUrlDatabase = urlsForUser(req.session.user_id);
+  let templateVars = {  user_id: req.session.user_id, urls: usersUrlDatabase, userList: users };
   res.render("urls_index", templateVars);
 });
 
@@ -68,7 +65,7 @@ app.get("/hello", (req, res) => {
 
 //input: urls/*SHORTURL*   output: takes you to urls_show.ejs
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {  user_id: req.cookies["user_id"], urls: urlDatabase, shortURL: req.params.id, userList: users };
+  let templateVars = {  user_id: req.session.user_id, urls: urlDatabase, shortURL: req.params.id, userList: users };
   res.render("urls_show", templateVars);
 });
 
@@ -80,13 +77,13 @@ app.get("/u/:shortURL", (req, res) => {
 
 //howusers register email password
 app.get("/register", (req, res) => {
-  let templateVars = {  user_id: req.cookies["user_id"], userList: users };
+  let templateVars = {  user_id: req.session.user_id, userList: users };
   res.render("urls_register", templateVars);
 });
 
 //new log in method
 app.get("/login", (req, res) => {
-  let templateVars = { user_id: req.cookies["user_id"], userList: users};
+  let templateVars = { user_id: req.session.user_id, userList: users};
   res.render("urls_login", templateVars);
 });
 
@@ -132,7 +129,8 @@ app.post("/login", (req, res) => {
       console.log(' email matches an existing user'); //used for debugging
       if (bcrypt.compareSync(req.body.password, hashedPassword)) { //(users[userKeys].password === req.body.password)
         console.log('password matches an existing user'); //used for debugging
-        res.cookie('user_id', userKeys);
+        req.session.user_id = userKeys;
+        console.log(req.session.user_id);   //used for debugging
         res.redirect(`http://localhost:8080/urls/`);
       } else {
         res.status(403).send('Password does not match email provided');
@@ -144,13 +142,13 @@ app.post("/login", (req, res) => {
 
 //logout using cookies
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id');
+  console.log(req.session.user_id);
+  req.session = null;
   res.redirect(`http://localhost:8080/urls/`);
 });
 
 // register email password
 app.post("/register", (req, res) => {
-  //let templateVars = {  user_id: req.cookies["user_id"], userList: users };
   let tempId = uString;
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
