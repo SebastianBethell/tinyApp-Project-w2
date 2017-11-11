@@ -95,15 +95,26 @@ app.post("/urls/:id/", (req, res) => {
 });
 
 
-//login using cookies
+//checks if your password and email back an excisting user if so it logs you in if not 403 status code sent back
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect(`http://localhost:8080/urls/`);
+  for (userKeys in users)
+  if (users[userKeys].email === req.body.email){
+    console.log(' email matches an existing user');
+    if (users[userKeys].password === req.body.password) {
+      console.log('password matches an existing user');
+      res.cookie('user_id', userKeys);
+      res.redirect(`http://localhost:8080/urls/`);
+    } else {
+      res.status(403).send('Password does not match email provided');
+    }
+  } else {
+    res.status(403).send('Email not found');
+  }
 });
 
 //logout using cookies
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('users');
   res.redirect(`http://localhost:8080/urls/`);
 });
 
