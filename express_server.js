@@ -67,6 +67,13 @@ app.get("/register", (req, res) => {
   res.render("urls_register", templateVars);
 });
 
+//new log in method
+app.get("/login", (req, res) => {
+  let templateVars = { users: users};
+  res.render("urls_login", templateVars);
+});
+
+
 //this gets called when user enters website into form and hits submit.  adds http:// to website entered and redirects you to urls/*SHORTURL*
 app.post("/urls", (req, res) => {
   console.log(req.body);  // debug statement to see POST parameters.
