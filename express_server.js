@@ -34,13 +34,13 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {  username: req.cookies["username"] };
+  let templateVars = {  users: users };
   res.render("urls_new", templateVars);
 });
 
 //lists all my url database and has link to shorten an URL
 app.get("/urls", (req, res) => {
-  let templateVars = {  username: req.cookies["username"], urls: urlDatabase };
+  let templateVars = {  users: users, urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
@@ -51,7 +51,7 @@ app.get("/hello", (req, res) => {
 
 //input: urls/*SHORTURL*   output: takes you to urls_show.ejs
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {  username: req.cookies["username"], urls: urlDatabase, shortURL: req.params.id };
+  let templateVars = {  users: users, urls: urlDatabase, shortURL: req.params.id };
   res.render("urls_show", templateVars);
 });
 
@@ -63,7 +63,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 //howusers register email password
 app.get("/register", (req, res) => {
-  let templateVars = {  username: req.cookies["username"] };
+  let templateVars = {  users: users };
   res.render("urls_register", templateVars);
 });
 

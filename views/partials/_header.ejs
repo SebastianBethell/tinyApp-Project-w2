@@ -1,14 +1,14 @@
 
   <h1>Header Partial</h1>
     <body>
-      <% if(username){ %>
+      <% if(users){ %>
         <form action="/logout" method="POST">
-          <label for="">User: <%= username %></label>
+          <label for="">User: <%= users %></label>
           <input type="submit" value="logout">
         </form>
       <% } else{ %>
         <form action="/login" method="POST">
-          <label for="">Login: <%= username %></label>
+          <label for="">Login: <%= users %></label>
           <input id="login" type="text" name="username" placeholder="Enter name here" style="width: 250px">
           <input type="submit" value="Submit">
         </form>
