@@ -43,6 +43,11 @@ const users = {
 
 //http://localhost:8080/
 app.get("/", (req, res) => {
+  if (users[req.session.user_id]) {
+    res.redirect(`http://localhost:8080/urls/`);
+  } else {
+    res.redirect(`http://localhost:8080/login`);
+  }
   res.end("Hello!");
 });
 

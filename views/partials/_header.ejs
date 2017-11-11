@@ -1,11 +1,13 @@
   <h1>Header Partial</h1>
   <body>
-  <a href="http://localhost:8080/register">Registration</a><br>
-  <a href="http://localhost:8080/login">Login</a>
   <% if(userList[user_id]){ %>
     <form action="/logout" method="POST">
-      <label for="">User: <%= user_id %></label>
+      <label for="">User: <%= userList[user_id].email %></label>
       <input type="submit" value="logout">
     </form>
-   <% } %>
+  <% } else{ %>
+    <a href="http://localhost:8080/register">Registration</a><br>
+    <a href="http://localhost:8080/login">Login</a>
+  <% } %>
+
   </body>
