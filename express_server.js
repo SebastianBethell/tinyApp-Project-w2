@@ -55,7 +55,7 @@ app.get("/", (req, res) => {
 //page to enter new urls to be shortened
 //renders urls_new
 app.get("/urls/new", (req, res) => {
-  let templateVars = {   user_id: req.session.user_id, userList: users };   \
+  let templateVars = {   user_id: req.session.user_id, userList: users };
   res.render("urls_new", templateVars);
 });
 
