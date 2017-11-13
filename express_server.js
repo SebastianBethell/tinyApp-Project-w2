@@ -15,7 +15,7 @@ app.use(cookieSession({
   keys: ['key1'],
 }))
 
-//seys up my urlDatabase hardcoded with2 websites
+//sets up my urlDatabase hardcoded with 2 websites
 const urlDatabase = {
   "b2xVn2": {
     longUrl: "http://www.lighthouselabs.ca",
@@ -51,30 +51,29 @@ app.get("/", (req, res) => {
   res.end("Hello!");
 });
 
+
+//page to enter new urls to be shortened
+//renders urls_new
 app.get("/urls/new", (req, res) => {
-  let templateVars = {   user_id: req.session.user_id, userList: users };   //req.cookies["user_id"]
+  let templateVars = {   user_id: req.session.user_id, userList: users };   \
   res.render("urls_new", templateVars);
 });
 
-//lists all my url database and has link to shorten an URL
+//main page.
+//renders urls_index
 app.get("/urls", (req, res) => {
   let usersUrlDatabase = urlsForUser(req.session.user_id);
   let templateVars = {  user_id: req.session.user_id, urls: usersUrlDatabase, userList: users };
   res.render("urls_index", templateVars);
 });
 
-//left over from source code
-app.get("/hello", (req, res) => {
-  res.end("<html><body>Hello <b>World</b></body></html>\n");
-});
-
-//input: urls/*SHORTURL*   output: takes you to urls_show.ejs
+//when user hits edit or goes to urls/id this renders urls_show
 app.get("/urls/:id", (req, res) => {
   let templateVars = {  user_id: req.session.user_id, urls: urlDatabase, shortURL: req.params.id, userList: users };
   res.render("urls_show", templateVars);
 });
 
-//input: /u/*SHORTuRL*    output: redirects to the long version of the website
+//redirects to the long version of the website
 app.get("/u/:shortURL", (req, res) => {
   if (urlDatabase[req.params.shortURL]) {
     let longURL = urlDatabase[req.params.shortURL].longUrl;
@@ -85,7 +84,8 @@ app.get("/u/:shortURL", (req, res) => {
 
 });
 
-//howusers register email password
+//registration page
+//if user is logged in redirects to /urls
 app.get("/register", (req, res) => {
   if (users[req.session.user_id]){
     res.redirect(`http://localhost:8080/urls/`);
@@ -94,7 +94,8 @@ app.get("/register", (req, res) => {
   res.render("urls_register", templateVars);
 });
 
-//new log in method
+//login page
+//if user is logged in redirects to /urls
 app.get("/login", (req, res) => {
   if (users[req.session.user_id]){
     res.redirect(`http://localhost:8080/urls/`);
@@ -105,6 +106,7 @@ app.get("/login", (req, res) => {
 
 
 //this gets called when user enters website into form and hits submit.  adds http:// to website entered and redirects you to urls/*SHORTURL*
+//all checks done in the html
 app.post("/urls", (req, res) => {
   let nString = generateRandomString('0123456789abcdefghijklmnopqrstuvwxyz');
   urlDatabase[nString] = {
@@ -114,13 +116,15 @@ app.post("/urls", (req, res) => {
   res.redirect(`http://localhost:8080/urls/${nString}`);
 });
 
-//deletes the urls from out database
+//deletes the urls from out database - no checks!
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect(`http://localhost:8080/urls/`);
 });
 
-//update long url to new requested url
+//update long url to new url
+//activates when user presses submit on the edit page
+//checks that you are logged in then updates the longurl to the newly requested version
 app.post("/urls/:id/", (req, res) => {
   if (urlDatabase[req.params.id].userID === req.body.uid){
       urlDatabase[req.params.id].longUrl = req.body['newLongUrl'];
@@ -131,15 +135,16 @@ app.post("/urls/:id/", (req, res) => {
 
 });
 
-
-//checks if your password and email back an excisting user if so it logs you in if not 403 status code sent back
+//Activates when user submits email and password for logging in
+//uses bcrypton password for security. checks if email inputed matches any in the user database then compaes the passwords.
+//If no match send status 403
 app.post("/login", (req, res) => {
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   for (userKeys in users) {
     if (users[userKeys].email === req.body.email){
-      if (bcrypt.compareSync(req.body.password, hashedPassword)) { //(users[userKeys].password === req.body.password)
+      if (bcrypt.compareSync(req.body.password, hashedPassword)) {
         req.session.user_id = userKeys;
         res.redirect(`http://localhost:8080/urls/`);
       } else {
@@ -150,13 +155,13 @@ app.post("/login", (req, res) => {
   res.status(403).send('Email not found');
 });
 
-//logout using cookies
+//logout - clears the user_id cookie
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect(`http://localhost:8080/urls/`);
 });
 
-// register email password
+// register - also confirms the email is unique and that there are entries in both the email and password fields
 app.post("/register", (req, res) => {
   let regString = generateRandomString('0123456789abcdefghijklmnopqrstuvwxyz');
   const password = req.body.password;
@@ -170,7 +175,6 @@ app.post("/register", (req, res) => {
           res.status(403).send('Email already belongs to another user.  Please go back and try again.');
     }
   }
-
   users[regString] = {
     id: regString,
     email: req.body.email,
@@ -181,7 +185,11 @@ app.post("/register", (req, res) => {
 });
 
 
-//function for returning a subset of the urlDatabase that belongs to user id
+
+/**
+ * @param  {string} - takes in the id of the user to compare to the id tag on the urls
+ * @return {object} - returns an object that is the subset of the urlDatabase object with the urls that belong to the user id
+ */
 function urlsForUser(id) {
   let urlDatabaseForUser = {};
   for (urlID in urlDatabase){
@@ -191,14 +199,10 @@ function urlsForUser(id) {
   }
   return urlDatabaseForUser;
 }
-//urlsForUser('userRandomID'); //used for debugging
 
 
-//random number generator
-//let rString = generateRandomString('0123456789abcdefghijklmnopqrstuvwxyz');
-//let uString = generateRandomString('0123456789abcdefghijklmnopqrstuvwxyz');
 
-
+//random number generator - used for user id and url id
 function generateRandomString(chars) {
     let result = '';
     for (let i = 6; i > 0; --i) {
