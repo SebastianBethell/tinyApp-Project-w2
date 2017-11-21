@@ -32,12 +32,12 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "1"
+    password: bcrypt.hashSync('1', 10)
   },
  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "2"
+    password: bcrypt.hashSync('2', 10)
   }
 }
 
@@ -141,18 +141,21 @@ app.post("/urls/:id/", (req, res) => {
 app.post("/login", (req, res) => {
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
+  let validEmail = false;
 
   for (userKeys in users) {
     if (users[userKeys].email === req.body.email){
-      if (bcrypt.compareSync(req.body.password, hashedPassword)) {
+       validEmail = true;
+       if (bcrypt.compareSync(password, users[userKeys].password)) {//if (bcrypt.compareSync(users[userKeys].password, hashedPassword)) {
         req.session.user_id = userKeys;
         res.redirect(`http://localhost:8080/urls/`);
       } else {
-        res.status(403).send('Password does not match email provided');
+        return res.send("Password does not match email provided").status(403);
       }
+    } if (!validEmail) {
+       return res.send("Email does not belong to any current user in our database");  //if going through the full loop it hits here send email not found
     }
   }
-  res.status(403).send('Email not found');
 });
 
 //logout - clears the user_id cookie
@@ -168,11 +171,11 @@ app.post("/register", (req, res) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   if (req.body.password === '' || req.body.email === ''){
-    res.status(403).send('You need to input both an email and a password. Go back to try again.');
+    res.send("You need to input both an email and a password. Go back to try again.").status(403);
   }
   for (user in users){
     if (req.body.email === users[user].email){
-          res.status(403).send('Email already belongs to another user.  Please go back and try again.');
+      res.send("mail already belongs to another user.  Please go back and try again.").status(403);
     }
   }
   users[regString] = {
