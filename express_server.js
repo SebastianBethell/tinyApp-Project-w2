@@ -144,7 +144,6 @@ app.post("/login", (req, res) => {
   let validEmail = false;
 
   for (userKeys in users) {
-    console.log('userKeys', userKeys);
     if (users[userKeys].email === req.body.email){
        validEmail = true;
        if (bcrypt.compareSync(password, users[userKeys].password)) {//if (bcrypt.compareSync(users[userKeys].password, hashedPassword)) {
@@ -189,7 +188,6 @@ app.post("/register", (req, res) => {
     password: hashedPassword
   };
   req.session.user_id = users[regString].id;
-  console.log(users);
   res.redirect(`http://localhost:8080/urls/`);
 });
 
