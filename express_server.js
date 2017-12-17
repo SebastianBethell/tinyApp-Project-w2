@@ -144,6 +144,7 @@ app.post("/login", (req, res) => {
   let validEmail = false;
 
   for (userKeys in users) {
+    console.log('userKeys', userKeys);
     if (users[userKeys].email === req.body.email){
        validEmail = true;
        if (bcrypt.compareSync(password, users[userKeys].password)) {//if (bcrypt.compareSync(users[userKeys].password, hashedPassword)) {
@@ -152,15 +153,17 @@ app.post("/login", (req, res) => {
       } else {
         return res.send("Password does not match email provided").status(403);
       }
-    } if (!validEmail) {
-       return res.send("Email does not belong to any current user in our database");  //if going through the full loop it hits here send email not found
     }
   }
+  if (!validEmail) {
+       return res.send("Email does not belong to any current user in our database");  //if going through the full loop it hits here send email not found
+    }
 });
 
 //logout - clears the user_id cookie
 app.post("/logout", (req, res) => {
   req.session = null;
+    console.log(users);
   res.redirect(`http://localhost:8080/urls/`);
 });
 
@@ -172,10 +175,12 @@ app.post("/register", (req, res) => {
 
   if (req.body.password === '' || req.body.email === ''){
     res.send("You need to input both an email and a password. Go back to try again.").status(403);
+    return;
   }
   for (user in users){
     if (req.body.email === users[user].email){
       res.send("mail already belongs to another user.  Please go back and try again.").status(403);
+      return;
     }
   }
   users[regString] = {
@@ -184,6 +189,7 @@ app.post("/register", (req, res) => {
     password: hashedPassword
   };
   req.session.user_id = users[regString].id;
+  console.log(users);
   res.redirect(`http://localhost:8080/urls/`);
 });
 
